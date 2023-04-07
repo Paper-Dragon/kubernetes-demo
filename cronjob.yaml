@@ -2,24 +2,22 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   creationTimestamp: null
-  name: cj2
+  name: helloabc
 spec:
-  # startingDeadlineSeconds: 300 #  它表示任务如果由于某种原因错过了调度时间,开始该任务的截止时间的秒数.过了截止时间，CronJob 就不会开始该任务的实例（未来的任务仍在调度之中）。如果将其设置为 200，则 Job 控制器允许在实际调度之后最多 200 秒内创建 Job。   
+  startingDeadlineSeconds: 300 #  它表示任务如果由于某种原因错过了调度时间,开始该任务的截止时间的秒数.过了截止时间，CronJob 就不会开始该任务的实例（未来的任务仍在调度之中）。如果将其设置为 200，则 Job 控制器允许在实际调度之后最多 200 秒内创建 Job。   
   # 如果 startingDeadlineSeconds 的设置值低于 10 秒钟，CronJob 可能无法被调度。 这是因为 CronJob 控制器每 10 秒钟执行一次检查。
-  #concurrencyPolicy: Allow 
+  concurrencyPolicy: Allow 
   # Forbid： CronJob 不允许并发任务执行；如果新任务的执行时间到了而老任务没有执行完，CronJob 会忽略新任务的执行。
   # Allow（默认）：CronJob 允许并发任务执行。
   # Replace：如果新任务的执行时间到了而老任务没有执行完，CronJob 会用新任务替换当前正在运行的任务。
   # 并发性规则仅适用于相同 CronJob 创建的任务。如果有多个 CronJob，它们相应的任务总是允许并发执行的。
-  successfulJobsHistoryLimit: 5
   failedJobsHistoryLimit: 8
-  suspend: false
   jobTemplate:
     metadata:
       creationTimestamp: null
-      name: echo-4
+      name: echo-2
     spec:
-      ttlSecondsAfterFinished: 100 # job在执行结束之后（状态为complated或Failed）自动清理。设置为0表示执行结束后立即删除
+            #ttlSecondsAfterFinished: 100 # job在执行结束之后（状态为complated或Failed）自动清理。设置为0表示执行结束后立即删除
       activeDeadlineSeconds: 50 # Job的最长运行时间，一旦 Job 运行时间达到activeDeadlineSeconds 秒，其所有运行中的 Pod 都会被终止， 并且 Job 的状态更新为 type: Failed 及 reason: DeadlineExceeded。
       backoffLimit: 4 # 如果任务失败，失败多少次后不再执行
       completions: 1 # 有多少个Pod执行成功，认为任务是成功的，为空则和parallelism数值一致
@@ -45,5 +43,8 @@ spec:
             resources: {}
           restartPolicy: Never
   schedule: '* * * * *'
-status: {}
-
+  successfulJobsHistoryLimit: 5
+  suspend: false
+  # ttlSecondsAfterFinished vs successfulJobsHistoryLimit
+  #原因是ttl控制器提前cronjob控制器一步把job删除了。而我恰好把sleep时间设置为10s，cronjob控制器每10秒检查一次，容器生成读写层在2-5秒左右，cron规则是每分钟一次，activeDeadlineSeconds是50秒（未生效），导致60秒之内至多创建3个job
+  #successfulJobsHistoryLimit设置为0的时候cronjob生效，1 2 是ttl控制器提前删除 
