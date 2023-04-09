@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: deploy-inicontainer
+  name: deploy-inicontainer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deploy-inicontainer
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: deploy-inicontainer
+    spec:
+      initContainers: 
+      - name: busybox
+        image: busybox
+        command: 
+        - sh
+        - -c
+        - "curl baidu.com && id && touch ccc.conf"
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+status: {}
