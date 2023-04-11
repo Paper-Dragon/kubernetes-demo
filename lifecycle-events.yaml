@@ -15,6 +15,6 @@ spec:
           command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"] # sleep结束之前，不会running，甚至ip都没有
       preStop: # 在容器因 API 请求或者管理事件（诸如存活态探针、启动探针失败、资源抢占、资源竞争等） 而被终止之前，此回调会被调用。 
         exec:
-                #command: ["/bin/sh","-c"," nginx -s quit"]
+                #command: ["/bin/sh","-c"," nginx -s quit"] # 如果 主ji进程先于prestop退出， 会出现PreStopFailed警告
           command: ["/bin/sh","-c","nginx -s quit; while killall -0 nginx; do sleep 1;echo 123456789exit done"]
 
