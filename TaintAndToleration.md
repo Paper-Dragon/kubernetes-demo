@@ -136,3 +136,14 @@ status: {}
 	基于Key+Effect删除： kubectl taint nodes k8s-node01 ssd:PreferNoSchedule-
 修改污点（Key和Effect相同）：
 	kubectl taint nodes k8s-node01 ssd=true:PreferNoSchedule --overwrite
+
+## 其他
+
+
+
+- --node-monitor-grace-period duration   Default: 40s  	
+  - 在将一个 Node 标记为不健康之前允许其无响应的时长上限。 必须比 kubelet 的 nodeStatusUpdateFrequency 大 N 倍； 这里 N 指的是 kubelet 发送节点状态的重试次数。
+- --node-monitor-period duration   Default: 5s  
+  - 节点控制器对节点状态进行同步的重复周期。
+- --node-startup-grace-period duration   Default: 1m0s  
+  - 在节点启动期间，节点可以处于无响应状态； 但超出此标志所设置的时长仍然无响应则该节点被标记为不健康。
