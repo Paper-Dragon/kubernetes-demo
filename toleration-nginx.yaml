@@ -29,6 +29,14 @@ spec:
           value: "true"
           effect: PreferNoSchedule
           operator: Equal
+        - effect: NoExecute # 内置
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 300
+        - effect: NoExecute # 内置
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 300
       nodeSelector:
         ssd: "true"
 status: {}
