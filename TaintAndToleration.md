@@ -80,6 +80,40 @@ kubectl taint nodes k8s-node01 ssd=true:PreferNoSchedule
 ## 节点宕机快速恢复业务应用
 
 ```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx-toleration
+  name: nginx-toleration
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-toleration
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx-toleration
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        ports:
+        - containerPort: 80
+        resources: {}
+      tolerations: # 跟nodeSelector必须都有才能调度到指定节点
+        - key: ssd
+          value: "true"
+          effect: PreferNoSchedule
+          operator: Equal
+      nodeSelector:
+        ssd: "true"
+status: {}
 
 
 
