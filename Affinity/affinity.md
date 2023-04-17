@@ -187,9 +187,140 @@ status: {}
 
 ## 示例3：应用和缓存尽量部署在同一个域内
 
+```yaml
+# 同一个应用不同副本固定节点
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: redis-cache
+  name: redis-cache
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-cache
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redis-cache
+    spec:
+      # nodeSelector:
+      #   app: redis-cache
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:  # Pod选择器配置，可以配置多个
+              matchExpressions:  # 和节点亲和力一致
+              - key: app
+                operator: In
+                values:
+                - redis-cache
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - image: redis:3.2-alpine
+        name: redis
+        resources: {}
+status: {}
+# 应用和缓存尽量部署在同一个域内
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web-server
+  name: web-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: web-server
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web-server
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:  # Pod选择器配置，可以配置多个
+              matchExpressions:  # 和节点亲和力一致
+              - key: app
+                operator: In
+                values:
+                - web-server
+            topologyKey: kubernetes.io/hostname
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - redis-cache
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - image: nginx:1.16-alpine
+        name: nginx
+        resources: {}
+status: {}
 
 
-## 示例4：尽量调度到高配置服务器
+
+```
+
+
+
+## 示例4：同一个应用多区域部署	
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: must-be-diff-zone
+  name: must-be-diff-zone
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: must-be-diff-zone
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: must-be-diff-zone
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:  # Pod选择器配置，可以配置多个
+              matchExpressions:  # 和节点亲和力一致
+              - key: app
+                operator: In
+                values:
+                - must-be-diff-zone
+            topologyKey: region
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+status: {}
+
+```
+
+
+
+
 
 
 
