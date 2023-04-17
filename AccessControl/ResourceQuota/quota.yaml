@@ -1,0 +1,30 @@
+# pods：限制最多启动Pod的个数
+#
+# requests.cpu：限制最高CPU请求数
+# requests.memory：限制最高内存的请求数
+# limits.cpu：限制最高CPU的limit上限
+# limits.memory：限制最高内存的limit上限
+
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-test
+  namespace: default
+  labels:
+    app: resourcequota
+spec:
+  hard:
+    pods: 50
+    requests.cpu: 0.5 # 所有非终止状态的 Pod，其 CPU 需求总量不能超过该值。
+    requests.memory: 512Mi
+    limits.cpu: 5   # 所有非终止状态的 Pod，其 CPU 限额总量不能超过该值。
+    limits.memory: 16Gi
+    configmaps: 20
+    requests.storage: 40Gi
+    persistentvolumeclaims: 20
+    replicationcontrollers: 20
+    secrets: 20
+    services: 50
+    services.loadbalancers: "2"
+    services.nodeports: "10"
