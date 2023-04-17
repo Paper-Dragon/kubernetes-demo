@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: prefer-ssd
+  name: prefer-ssd
+  namespace: kube-public
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: prefer-ssd
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: prefer-ssd
+    spec:
+      affinity:
+        nodeAffinity: 
+          preferredDuringSchedulingIgnoredDuringExecution: # 软亲和力配置
+          - weight: 100  # 软亲和力权重，权重越高优先级越大，范围1-100
+            preference:  # 软亲和力配置项，和weight同级，可以配置多个，matchExpresssions和硬亲和力一致
+              matchExpressions: 
+              - key: ssd
+                operator: In  # In: 相当于key = value的形式
+                values:       # NotIn: 相当于key != value的形式
+                - "true"      # Exists: 节点存在label的key为指定值即可，不能配置values字段
+              - key: master
+                operator: NotIn  # In: 相当于key = value的形式
+                values:       # NotIn: 相当于key != value的形式
+                - "true"      # Exists: 节点存在label的key为指定值即可，不能配置values字段
+          - weight: 10  # 软亲和力权重，权重越高优先级越大，范围1-100
+            preference:  # 软亲和力配置项，和weight同级，可以配置多个，matchExpresssions和硬亲和力一致
+              matchExpressions: 
+              - key: disk
+                operator: In  # In: 相当于key = value的形式
+                values:       # NotIn: 相当于key != value的形式
+                - "hdd"      # Exists: 节点存在label的key为指定值即可，不能配置values字段
+      containers:
+      - image: nginx
+        name: nginx
+        resources: {}
+        env: 
+        - name: TZ
+          value: Asia/Shanghai
+        - name: LANG
+          value: C.UTF-8
+status: {}
