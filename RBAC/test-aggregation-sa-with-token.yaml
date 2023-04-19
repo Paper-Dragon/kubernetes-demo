@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: null
+  name: test-aggregation
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-test-aggregation
+  annotations:
+    kubernetes.io/service-account.name: "test-aggregation"
+type: kubernetes.io/service-account-token
