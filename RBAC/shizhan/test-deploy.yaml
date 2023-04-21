@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: kubectl
+  name: kubectl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubectl
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kubectl
+    spec:
+      serviceAccountName: tester123
+      containers:
+      - image: jockerdragon/kubectl:1.27-alpine-no-entrypoint
+        command: 
+        - sh
+        name: kubectl
+        resources: {}
+status: {}

@@ -1,0 +1,14 @@
+# 不能为rolebinding，namespace是集群级别的资源，可以正常bang绑定但是不能使！！！！用
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  creationTimestamp: null
+  name: namespace-readonly
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: namespace-readonly-cluterrole
+subjects:
+- kind: ServiceAccount
+  name: tester456
+  namespace: default
