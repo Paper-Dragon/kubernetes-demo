@@ -7,4 +7,4 @@ rules: null
 aggregationRule:
   clusterRoleSelectors:
   - matchLabels:
-      rbac.example.com/aggregate-to-monitoring: "true"
+      rbac.domainxxx.com/aggregate-to-monitoring: "true"
