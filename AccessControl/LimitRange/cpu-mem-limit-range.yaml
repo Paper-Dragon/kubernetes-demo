@@ -5,11 +5,11 @@ metadata:
 spec:
   limits:
   - default: # 此处定义默认限制值
-      cpu: 1 # 1 cpu = 1000m
-      memory: 512Mi
+      cpu: 4 # 1 cpu = 1000m
+      memory: 50Mi
     defaultRequest: # 此处定义默认请求值
       cpu: 0.5
-      memory: 256Mi
+      memory: 2Mi
     max: # max 和 min 定义限制范围
       cpu: "4"
     min:
