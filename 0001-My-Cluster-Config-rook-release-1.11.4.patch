@@ -1,0 +1,88 @@
+From 6377e9281b820f32aaa5747850ca230bed859d16 Mon Sep 17 00:00:00 2001
+From: PaperDragon <2678885646@qq.com>
+Date: Mon, 24 Apr 2023 13:31:06 +0800
+Subject: [PATCH] My Cluster Config
+
+---
+ deploy/examples/cluster.yaml  | 26 +++++++++++++++++++++-----
+ deploy/examples/operator.yaml |  3 ++-
+ 2 files changed, 23 insertions(+), 6 deletions(-)
+
+diff --git a/deploy/examples/cluster.yaml b/deploy/examples/cluster.yaml
+index 6fb7701dd..b847ac520 100644
+--- a/deploy/examples/cluster.yaml
++++ b/deploy/examples/cluster.yaml
+@@ -34,7 +34,7 @@ spec:
+   # This means Ceph's status could be degraded and we don't recommend upgrading but you might decide otherwise
+   # Use at your OWN risk
+   # To understand Rook's upgrade process of Ceph, read https://rook.io/docs/rook/latest/ceph-upgrade.html#ceph-version-upgrades
+-  skipUpgradeChecks: false
++  skipUpgradeChecks: true
+   # Whether or not continue if PGs are not clean during an upgrade
+   continueUpgradeAfterChecksEvenIfNotHealthy: false
+   # WaitTimeoutForHealthyOSDInMinutes defines the time (in minutes) the operator would wait before an OSD can be stopped for upgrade or restart.
+@@ -67,9 +67,9 @@ spec:
+     # serve the dashboard under a subpath (useful when you are accessing the dashboard via a reverse proxy)
+     # urlPrefix: /ceph-dashboard
+     # serve the dashboard at the given port.
+-    # port: 8443
++    # port: 7000
+     # serve the dashboard using SSL
+-    ssl: true
++    ssl: false
+   # enable prometheus alerting for cluster
+   monitoring:
+     # requires Prometheus to be pre-installed
+@@ -233,10 +233,26 @@ spec:
+     mgr: system-cluster-critical
+     #crashcollector: rook-ceph-crashcollector-priority-class
+   storage: # cluster level storage configuration and selection
+-    useAllNodes: true
+-    useAllDevices: true
++    useAllNodes: false
++    useAllDevices: false
+     #deviceFilter:
+     config:
++    nodes:
++      - name: "k8s-master"
++        devices: # specific devices to use for storage can be specified for each node
++          - name: "sdb"
++      - name: "k8s-worker1"
++        devices: # specific devices to use for storage can be specified for each node
++          - name: "sdb"
++      - name: "k8s-worker2"
++        devices: # specific devices to use for storage can be specified for each node
++          - name: "sdb"
++      - name: "k8s-worker3"
++        devices: # specific devices to use for storage can be specified for each node
++          - name: "sdb"
++      - name: "k8s-worker4"
++        devices: # specific devices to use for storage can be specified for each node
++          - name: "sdb"
+       # crushRoot: "custom-root" # specify a non-default root label for the CRUSH map
+       # metadataDevice: "md0" # specify a non-rotational storage so ceph-volume will use it as block db device of bluestore.
+       # databaseSizeMB: "1024" # uncomment if the disks are smaller than 100 GB
+diff --git a/deploy/examples/operator.yaml b/deploy/examples/operator.yaml
+index 82c5de6b2..de4087c2c 100644
+--- a/deploy/examples/operator.yaml
++++ b/deploy/examples/operator.yaml
+@@ -492,7 +492,8 @@ data:
+ 
+   # Whether to start the discovery daemon to watch for raw storage devices on nodes in the cluster.
+   # This daemon does not need to run if you are only going to create your OSDs based on StorageClassDeviceSets with PVCs.
+-  ROOK_ENABLE_DISCOVERY_DAEMON: "false"
++  #ROOK_ENABLE_DISCOVERY_DAEMON: "false"
++  ROOK_ENABLE_DISCOVERY_DAEMON: "true"
+   # The timeout value (in seconds) of Ceph commands. It should be >= 1. If this variable is not set or is an invalid value, it's default to 15.
+   ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS: "15"
+   # Enable the csi addons sidecar.
+-- 
+2.25.1
+git format-patch -1 -o /root/patch/
+应用补丁
+这个命令用于检查补丁文件，确保文件没有问题
+git apply --stat /root/patch/0001-test-fix.patch
+查看是否可以应用成功
+git apply --check /root/patch/0001-test-fix.patch
+实际应用补丁
+git am -s < /root/patch/0001-test-fix.patch
